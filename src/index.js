@@ -1,12 +1,4 @@
 const componentRssReader = () => {
-  const pageHeader = document.createElement('div');
-  pageHeader.classList.add('page-header');
-
-  const pageTitle = document.createElement('h1');
-  pageTitle.innerHTML = 'RSS Reader';
-
-  pageHeader.appendChild(pageTitle);
-
   const mainBlock = document.createElement('div');
   mainBlock.classList.add('container');
 
@@ -34,7 +26,6 @@ const componentRssReader = () => {
   inputGroup.appendChild(streamURL);
   inputGroup.appendChild(streamSubmit);
   callRssForm.appendChild(inputGroup);
-  jumboField.appendChild(pageHeader);
   jumboField.appendChild(callRssForm);
   mainBlock.appendChild(jumboField);
 
