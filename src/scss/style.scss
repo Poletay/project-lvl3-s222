@@ -1,1 +1,10 @@
 @import "~bootstrap/scss/bootstrap";
+
+.invalid {
+	border-color: red;
+}
+
+.invalid:focus {
+	border-color: red;
+    box-shadow: 0 0 10px red;
+}

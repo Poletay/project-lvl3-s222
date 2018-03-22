@@ -1,35 +1,71 @@
-const componentRssReader = () => {
-  const mainBlock = document.createElement('div');
-  mainBlock.classList.add('container');
+import isURL from 'validator/lib/isURL';
+import axios from 'axios';
+import render from './render';
 
-  const jumboField = document.createElement('div');
-  jumboField.classList.add('jumbotron');
+let rss = [];
 
-  const inputGroup = document.createElement('div');
-  inputGroup.classList.add('input-group');
+const parser = new DOMParser();
 
-  const callRssForm = document.createElement('form');
-  callRssForm.name = 'callRSS';
+const streamURL = document.querySelector('.url-to-rss');
+const addRssForm = document.querySelector('.add-form');
 
-  const streamURL = document.createElement('input');
-  streamURL.type = 'text';
-  streamURL.name = 'streamURL';
-  streamURL.placeholder = 'URL to RSS-Stream';
-  streamURL.classList.add('form-control');
+const unpackCDATA = str => str.replace('<![CDATA[', '').replace(']]>', '');
 
-  const streamSubmit = document.createElement('input');
-  streamSubmit.type = 'button';
-  streamSubmit.name = 'streamSubmit';
-  streamSubmit.value = 'Start';
-  streamSubmit.classList.add('btn', 'btn-primary', 'btn-lg');
-
-  inputGroup.appendChild(streamURL);
-  inputGroup.appendChild(streamSubmit);
-  callRssForm.appendChild(inputGroup);
-  jumboField.appendChild(callRssForm);
-  mainBlock.appendChild(jumboField);
-
-  return mainBlock;
+const checkUrl = (url) => {
+  if (url === '') {
+    streamURL.classList.remove('invalid');
+  } else if (isURL(url)) {
+    streamURL.classList.remove('invalid');
+  } else {
+    streamURL.classList.add('invalid');
+  }
 };
 
-document.body.appendChild(componentRssReader());
+const addStream = (stream) => {
+  const getArticles = () => {
+    let articlesList = [];
+    const rssItems = stream.querySelectorAll('item');
+
+    rssItems.forEach((article) => {
+      const articleTitle = unpackCDATA(article.querySelector('title').innerHTML);
+      const articleLink = unpackCDATA(article.querySelector('link').innerHTML);
+
+      articlesList = [...articlesList, { articleTitle, articleLink }];
+    });
+    return articlesList;
+  };
+
+  const title = unpackCDATA(stream.querySelector('title').innerHTML);
+  const description = unpackCDATA(stream.querySelector('description').innerHTML);
+  const articles = getArticles();
+  const newRssItem = { title, description, articles };
+  rss = [...rss, newRssItem];
+};
+
+const fetchRss = (link) => {
+  const result = new Promise((resolve, reject) => {
+    const cross = 'https://crossorigin.me/';
+    const crossLink = `${cross}${link}`;
+    axios.get(crossLink)
+      .then((response) => {
+        resolve(parser.parseFromString(response.data, 'application/xml'));
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+  return result;
+};
+
+streamURL.addEventListener('keyup', () => checkUrl(streamURL.value));
+addRssForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  fetchRss(streamURL.value)
+    .then((rssData) => {
+      addStream(rssData);
+      render(rss);
+    }).catch((error) => {
+      console.log({ error });
+    });
+  streamURL.value = '';
+});

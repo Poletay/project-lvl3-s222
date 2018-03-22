@@ -49,6 +49,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       title: 'RSS Reader. 1st Hexlet\'s frontend Project.',
+      template: 'src/index.html',
     }),
   ],
 };

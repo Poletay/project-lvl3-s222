@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>RSS Reader. 1st Hexlet's frontend Project.</title>
+    <link href="./css/style.bundle.css" rel="stylesheet">
+  </head>
+  <body>
+  	<![CDATA[Lorem ipsum feed for an interval of 30 seconds]]>
+    <div name="main-block" class="container">
+    	<div class="row">
+    		<div class="col-sm">
+    			<h2><small>Add-form for RSS Channels:</small></h2>
+    			<div name="jumbo-field" class="jumbotron">
+    				<form class="add-form">
+    					<div class="input-group error">
+    						<input type="text" class="form-control url-to-rss" placeholder="URL to RSS-Stream">
+    						<input type="submit" class="btn btn-primary btn-sm add-rss-btn" value="Add RSS Stream">
+    					</div>
+    				</form>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="row">
+    		<div class="col-sm">
+	    		<h2><small>RSS Channels list:</small></h2>
+   		 		<div class="jumbotron">
+    				<ul class="list-group" id="rsslist">
+					</ul>
+    			</div>
+		   	</div>
+		   	<div class="col-sm">
+		   	 	<h2><small>RSS articles list:</small></h2>
+    			<div class="jumbotron">
+    				<ul class="list-group" id="articleslist">
+					</ul>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+  </body>
+</html>
