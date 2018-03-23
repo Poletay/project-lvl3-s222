@@ -38,7 +38,7 @@ const renderArticles = (rssItem, list, modalBody) => {
   rssItem.articles.forEach(item => list.appendChild(mkListItem(item)));
 };
 
-export default (rss) => {
+export default (state) => {
   const listRss = document.querySelector('#rsslist');
   const listArticles = document.querySelector('#articleslist');
   const modalBody = document.querySelector('.modal-body');
@@ -46,7 +46,7 @@ export default (rss) => {
   listRss.innerHTML = '';
   listArticles.innerHTML = '';
 
-  rss.forEach((rssItem) => {
+  state.forEach((rssItem) => {
     renderRss(rssItem, listRss);
     renderArticles(rssItem, listArticles, modalBody);
   });
