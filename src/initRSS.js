@@ -6,27 +6,45 @@ import { addRSS, updateArticles } from './rssManager';
 export default () => {
   const streamURL = document.querySelector('.url-to-rss');
   const rssForm = document.querySelector('.add-form');
-  const state = [];
+  const rssState = [];
+  const formStatesList = {
+    valid: {
+      applyStyle: element => element.classList.remove('invalid'),
+      submitAction: (link) => {
+        const result = addRSS(link, rssState).then(() => updateArticles(rssState));
+        return result;
+      },
+    },
+    invalid: {
+      applyStyle: element => element.classList.add('invalid'),
+      submitAction: () => {},
+    },
+  };
 
-  const checkUrl = (url) => {
+  let formState = formStatesList.valid;
+
+  const setState = (url) => {
     if (url === '') {
-      streamURL.classList.remove('invalid');
+      formState = formStatesList.valid;
     } else if (isURL(url)) {
-      streamURL.classList.remove('invalid');
+      formState = formStatesList.valid;
     } else {
-      streamURL.classList.add('invalid');
+      formState = formStatesList.invalid;
     }
   };
 
-  streamURL.addEventListener('input', () => checkUrl(streamURL.value));
+  streamURL.addEventListener('input', () => {
+    setState(streamURL.value);
+    formState.applyStyle(streamURL);
+  });
+
   rssForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    addRSS(streamURL.value, state)
-      .then(() => updateArticles(state)
-        .then(() => {
-          render(state);
-          streamURL.value = '';
-        }))
+    formState.submitAction(streamURL.value)
+      .then(() => {
+        render(rssState);
+        streamURL.value = '';
+      })
       .catch((error) => {
         console.log({ error });
       });
