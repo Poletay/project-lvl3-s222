@@ -26,7 +26,7 @@ const renderArticles = (rssItem, list, modalBody) => {
     modalDescButton.dataset.toggle = 'modal';
     modalDescButton.dataset.target = '#modal';
     modalDescButton.innerHTML = 'Desc';
-    modalDescButton.addEventListener('mousedown', () => {
+    modalDescButton.addEventListener('click', () => {
       modal.textContent = item.articleDesc;
     });
 
