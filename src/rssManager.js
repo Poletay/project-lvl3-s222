@@ -10,24 +10,24 @@ const fetchRss = link => axios.get(`https://crossorigin.me/${link}`);
 
 const unpackCDATA = str => str.replace('<![CDATA[', '').replace(']]>', '');
 
+const getArticles = (rssDOM, currentArtList) => {
+  const articlesList = currentArtList;
+  const rssItems = rssDOM.querySelectorAll('item');
+
+  rssItems.forEach((article) => {
+    const articleTitle = unpackCDATA(article.querySelector('title').innerHTML);
+    const articleLink = unpackCDATA(article.querySelector('link').innerHTML);
+    const articleDesc = article.querySelector('description') ?
+      unpackCDATA(article.querySelector('description').innerHTML) :
+      'Description is not defined';
+
+    articlesList.push({ articleTitle, articleLink, articleDesc });
+  });
+  return articlesList;
+};
+
 export const updateArticles = (state) => {
   const curState = state;
-  const getArticles = (rssDOM, currentArtList) => {
-    const articlesList = currentArtList;
-    const rssItems = rssDOM.querySelectorAll('item');
-
-    rssItems.forEach((article) => {
-      const articleTitle = unpackCDATA(article.querySelector('title').innerHTML);
-      const articleLink = unpackCDATA(article.querySelector('link').innerHTML);
-      const articleDesc = article.querySelector('description') ?
-        unpackCDATA(article.querySelector('description').innerHTML) :
-        'Description is not defined';
-
-      articlesList.push({ articleTitle, articleLink, articleDesc });
-    });
-    return articlesList;
-  };
-
   console.log('Article list is updated.');
 
   const result = Promise.all(state.map((item, i) => fetchRss(item.rssLink)
