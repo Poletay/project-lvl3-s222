@@ -25,26 +25,23 @@ export const updateArticles = (state) => {
 
       articlesList.push({ articleTitle, articleLink, articleDesc });
     });
-    console.log('Article list is updated.');
     return articlesList;
   };
 
-  return Promise.all(state.map((item, i) => {
-    const result = new Promise((resolve, reject) => {
-      fetchRss(item.rssLink)
-        .then((res) => {
-          const rssDOM = parseXML(res.data);
-          curState[i].articles = _.unionBy(
-            curState[i].articles,
-            getArticles(rssDOM, curState[i].articles),
-            'articleLink',
-          );
-          resolve(state[i].articles);
-        })
-        .catch(error => reject(error));
-    });
-    return result;
-  }));
+  console.log('Article list is updated.');
+
+  const result = Promise.all(state.map((item, i) => fetchRss(item.rssLink)
+    .then((res) => {
+      const rssDOM = parseXML(res.data);
+      curState[i].articles = _.unionBy(
+        curState[i].articles,
+        getArticles(rssDOM, curState[i].articles),
+        'articleLink',
+      );
+      return state[i].articles;
+    })
+    .catch(error => console.log({ error }))));
+  return result;
 };
 
 export const addRSS = (rssLink, state) => {

@@ -6,14 +6,10 @@ import { addRSS, updateArticles } from './rssManager';
 export default () => {
   const streamURL = document.querySelector('.url-to-rss');
   const rssForm = document.querySelector('.add-form');
-  const rssState = [];
   const formStatesList = {
     valid: {
       applyStyle: element => element.classList.remove('invalid'),
-      submitAction: (link) => {
-        const result = addRSS(link, rssState).then(() => updateArticles(rssState));
-        return result;
-      },
+      submitAction: (link, rssState) => addRSS(link, rssState).then(() => updateArticles(rssState)),
     },
     invalid: {
       applyStyle: element => element.classList.add('invalid'),
@@ -21,35 +17,49 @@ export default () => {
     },
   };
 
-  let formState = formStatesList.valid;
+  const state = {
+    rssState: [],
+    formState: formStatesList.valid,
+  };
 
-  const setState = (url) => {
+  const setFormState = (url) => {
     if (url === '') {
-      formState = formStatesList.valid;
+      state.formState = formStatesList.valid;
     } else if (isURL(url)) {
-      formState = formStatesList.valid;
+      state.formState = formStatesList.valid;
     } else {
-      formState = formStatesList.invalid;
+      state.formState = formStatesList.invalid;
     }
   };
 
+  const update = () => {
+    updateArticles(state.rssState)
+      .then(() => {
+        render(state.rssState);
+        setTimeout(update, 5000);
+      })
+      .catch((error) => {
+        console.log({ error });
+        setTimeout(update, 5000);
+      });
+  };
+
   streamURL.addEventListener('input', () => {
-    setState(streamURL.value);
-    formState.applyStyle(streamURL);
+    setFormState(streamURL.value);
+    state.formState.applyStyle(streamURL);
   });
 
   rssForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    formState.submitAction(streamURL.value)
+    state.formState.submitAction(streamURL.value, state.rssState)
       .then(() => {
-        render(rssState);
+        render(state.rssState);
         streamURL.value = '';
       })
       .catch((error) => {
         console.log({ error });
       });
   });
-  setInterval(() => updateArticles(rssState)
-    .then(render(rssState))
-    .catch(error => console.log({ error })), 5000);
+
+  setTimeout(update, 5000);
 };
