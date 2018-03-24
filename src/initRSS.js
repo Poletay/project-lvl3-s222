@@ -6,7 +6,7 @@ import { addRSS, updateArticles } from './rssManager';
 export default () => {
   const streamURL = document.querySelector('.url-to-rss');
   const rssForm = document.querySelector('.add-form');
-  const formStatesList = {
+  const formActions = {
     valid: {
       applyStyle: element => element.classList.remove('invalid'),
       submitAction: (link, rssState) => addRSS(link, rssState).then(() => updateArticles(rssState)),
@@ -19,16 +19,16 @@ export default () => {
 
   const state = {
     rssState: [],
-    formState: formStatesList.valid,
+    formState: 'valid',
   };
 
   const setFormState = (url) => {
     if (url === '') {
-      state.formState = formStatesList.valid;
+      state.formState = 'valid';
     } else if (isURL(url)) {
-      state.formState = formStatesList.valid;
+      state.formState = 'valid';
     } else {
-      state.formState = formStatesList.invalid;
+      state.formState = 'invalid';
     }
   };
 
@@ -36,22 +36,23 @@ export default () => {
     updateArticles(state.rssState)
       .then(() => {
         render(state.rssState);
-        setTimeout(update, 5000);
       })
       .catch((error) => {
         console.log({ error });
+      })
+      .then(() => {
         setTimeout(update, 5000);
       });
   };
 
   streamURL.addEventListener('input', () => {
     setFormState(streamURL.value);
-    state.formState.applyStyle(streamURL);
+    formActions[state.formState].applyStyle(streamURL);
   });
 
   rssForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    state.formState.submitAction(streamURL.value, state.rssState)
+    formActions[state.formState].submitAction(streamURL.value, state.rssState)
       .then(() => {
         render(state.rssState);
         streamURL.value = '';
