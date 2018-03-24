@@ -49,4 +49,5 @@ export default () => {
         console.log({ error });
       });
   });
+  setInterval(() => updateArticles(rssState), 5000);
 };

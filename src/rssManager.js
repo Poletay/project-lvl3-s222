@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 
 const parseXML = (xml) => {
   const parser = new DOMParser();
@@ -11,8 +12,8 @@ const unpackCDATA = str => str.replace('<![CDATA[', '').replace(']]>', '');
 
 export const updateArticles = (state) => {
   const curState = state;
-  const getArticles = (rssDOM) => {
-    const articlesList = [];
+  const getArticles = (rssDOM, currentArtList) => {
+    const articlesList = currentArtList;
     const rssItems = rssDOM.querySelectorAll('item');
 
     rssItems.forEach((article) => {
@@ -24,6 +25,7 @@ export const updateArticles = (state) => {
 
       articlesList.push({ articleTitle, articleLink, articleDesc });
     });
+    console.log('Article list is updated.');
     return articlesList;
   };
 
@@ -32,7 +34,11 @@ export const updateArticles = (state) => {
       fetchRss(item.rssLink)
         .then((res) => {
           const rssDOM = parseXML(res.data);
-          curState[i].articles = getArticles(rssDOM);
+          curState[i].articles = _.unionBy(
+            curState[i].articles,
+            getArticles(rssDOM, curState[i].articles),
+            'articleLink',
+          );
           resolve(state[i].articles);
         })
         .catch(error => reject(error));
@@ -53,6 +59,7 @@ export const addRSS = (rssLink, state) => {
       };
 
       state.push(newRssItem);
+      console.log('New RSS channel was added.');
     });
 
   return result;
