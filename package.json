@@ -31,9 +31,9 @@
     "html-webpack-plugin": "^3.0.7",
     "jest": "^22.0.1",
     "jest-cli": "^22",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.9.3",
     "sass-loader": "^6.0.7",
-    "webpack": "^4.1.1",
+    "webpack": "^4.20.2",
     "webpack-cli": "^2.0.12",
     "webpack-merge": "^4.1.2"
   },
