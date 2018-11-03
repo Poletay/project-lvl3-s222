@@ -17,9 +17,9 @@ const getArticles = (rssDOM, currentArtList) => {
   rssItems.forEach((article) => {
     const articleTitle = unpackCDATA(article.querySelector('title').innerHTML);
     const articleLink = unpackCDATA(article.querySelector('link').innerHTML);
-    const articleDesc = article.querySelector('description') ?
-      unpackCDATA(article.querySelector('description').innerHTML) :
-      'Description is not defined';
+    const articleDesc = article.querySelector('description')
+      ? unpackCDATA(article.querySelector('description').innerHTML)
+      : 'Description is not defined';
 
     articlesList.push({ articleTitle, articleLink, articleDesc });
   });
